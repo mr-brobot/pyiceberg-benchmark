@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pyiceberg-benchmark"
+version = "0.1.0"
+description = ""
+authors = ["Josh Wiley <josh@cloudbend.dev>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.26"
+aws-cdk-lib = "2.88.0"
+constructs = "^10.2"
+aws-glue-sessions = "^0.38"
+jupyter = "^1.0"
+aws-cdk-aws-glue-alpha = "^2.88.0a0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
