@@ -1,2 +1,2 @@
-# pyiceberg-benchmark
+# PyIceberg Benchmark
 Benchmark environment for PyIceberg
