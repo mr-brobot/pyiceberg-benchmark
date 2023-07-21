@@ -28,7 +28,7 @@
         "AWS_PROFILE": "cloudbend"
     },
     "remoteUser": "vscode",
-    "postCreateCommand": "scripts/poetry/install.sh",
+    "postCreateCommand": "scripts/install.sh",
     "features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
         "ghcr.io/devcontainers-contrib/features/poetry:2": {
