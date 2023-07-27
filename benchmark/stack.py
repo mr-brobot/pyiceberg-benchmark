@@ -12,17 +12,19 @@ from aws_cdk.aws_ecr_assets import Platform
 from aws_cdk.aws_glue_alpha import Database, Table
 
 
-class NycTaxiBenchmarkFunction(DockerImageFunction):
+class ProfilingFunction(DockerImageFunction):
     def __init__(
         self,
         scope: Construct,
         construct_id: str,
         database: Database,
-        table: Table,
+        # table: Table,
         bucket: Bucket,
     ):
         image_code = DockerImageCode.from_image_asset(
-            "demo/function", platform=Platform.LINUX_ARM64, cmd=["app.handler"]
+            "benchmark/functions/profiling",
+            platform=Platform.LINUX_ARM64,
+            cmd=["app.handler"],
         )
 
         super().__init__(
@@ -31,29 +33,29 @@ class NycTaxiBenchmarkFunction(DockerImageFunction):
             code=image_code,
             architecture=Architecture.ARM_64,
             memory_size=1024,
-            timeout=Duration.seconds(30),
+            timeout=Duration.minutes(5),
             tracing=Tracing.ACTIVE,
             environment={
                 "ICEBERG_DATABASE_NAME": database.database_name,
-                "ICEBERG_TABLE_NAME": table.table_name,
+                # "ICEBERG_TABLE_NAME": table.table_name,
             },
         )
 
         bucket.grant_read(self)
 
-        account_id = Stack.of(self).account
-        region = Stack.of(self).region
-        self.add_to_role_policy(
-            PolicyStatement(
-                effect=Effect.ALLOW,
-                actions=["glue:GetTable"],
-                resources=[
-                    f"arn:aws:glue:{region}:{account_id}:catalog",
-                    database.database_arn,
-                    table.table_arn,
-                ],
-            )
-        )
+        # account_id = Stack.of(self).account
+        # region = Stack.of(self).region
+        # self.add_to_role_policy(
+        #     PolicyStatement(
+        #         effect=Effect.ALLOW,
+        #         actions=["glue:GetTable"],
+        #         resources=[
+        #             f"arn:aws:glue:{region}:{account_id}:catalog",
+        #             database.database_arn,
+        #             table.table_arn,
+        #         ],
+        #     )
+        # )
 
 
 class Benchmark(Stack):
@@ -71,8 +73,8 @@ class Benchmark(Stack):
         account_id = Stack.of(self).account
         region = Stack.of(self).region
 
-        benchmark_database = "benchmark"
-        benchmark_table = "nyc_taxi"
+        database = "benchmark"
+        table = "nyc_taxi"
 
         iceberg_database = Database.from_database_arn(
             self,
@@ -86,8 +88,12 @@ class Benchmark(Stack):
         #     f"arn:aws:glue:{region}:{account_id}:table/{database}/{table}",
         # )
 
-        # pyiceberg_function = NycTaxiBenchmarkFunction(
-        #     self, "NycTaxiBenchmarkFunction", iceberg_database, iceberg_table, iceberg_bucket
-        # )
+        pyiceberg_function = ProfilingFunction(
+            self,
+            "ProfilingFunction",
+            iceberg_database,
+            # iceberg_table,
+            iceberg_bucket,
+        )
 
         CfnOutput(self, "IcebergBucketName", value=iceberg_bucket.bucket_name)

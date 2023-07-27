@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "demo"
+version = "0.1.0"
+description = ""
+authors = ["Josh Wiley <josh@cloudbend.dev>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyiceberg = { git = "https://github.com/mr-brobot/iceberg.git", rev = "5b76fe2a2", subdirectory = "python", extras = [
+    "glue",
+    "s3fs",
+    "pyarrow",
+] }
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
